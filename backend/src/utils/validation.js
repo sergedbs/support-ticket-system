@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 export const ticketSchema = z.object({
-  title: z.string().trim().min(3).max(120),
-  description: z.string().trim().min(5).max(2000),
-  category: z.string().trim().min(2).max(60),
+  title: z.string().trim().min(4, 'Title must be at least 4 characters long').max(120),
+  description: z.string().trim().min(10, 'Description must be at least 10 characters long').max(2000),
+  category: z.string().trim().min(2, 'Category is required').max(60),
   priority: z.enum(['Low', 'Medium', 'High']),
   status: z.enum(['Open', 'In Progress', 'Resolved', 'Closed']).optional(),
 });

@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useTickets } from '../context/TicketContext.jsx';
 import { ticketCategories, ticketPriorities, ticketStatuses } from '../data/seedTickets.js';
+import { getApiErrorMessage } from '../utils/errors.js';
 
 export default function TicketFormPage() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ export default function TicketFormPage() {
     priority: existingTicket?.priority || 'Medium',
     status: existingTicket?.status || 'Open',
   }));
+  const [formError, setFormError] = useState('');
 
   const canEdit = useMemo(() => {
     if (!isEdit) return true;
@@ -36,17 +38,35 @@ export default function TicketFormPage() {
   }
 
   const updateValue = (key, value) => {
+    setFormError('');
     setValues((current) => ({ ...current, [key]: value }));
+  };
+
+  const getValidationError = () => {
+    if (values.title.trim().length < 4) return 'Title must be at least 4 characters long.';
+    if (values.description.trim().length < 10) return 'Description must be at least 10 characters long.';
+    return '';
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isEdit) {
-      await updateTicket(id, values);
-      navigate(`/tickets/${id}`);
-    } else {
-      const ticket = await createTicket(values);
-      navigate(`/tickets/${ticket.id}`);
+
+    const validationError = getValidationError();
+    if (validationError) {
+      setFormError(validationError);
+      return;
+    }
+
+    try {
+      if (isEdit) {
+        await updateTicket(id, values);
+        navigate(`/tickets/${id}`);
+      } else {
+        const ticket = await createTicket(values);
+        navigate(`/tickets/${ticket.id}`);
+      }
+    } catch (error) {
+      setFormError(getApiErrorMessage(error));
     }
   };
 
@@ -57,14 +77,25 @@ export default function TicketFormPage() {
         <h2 className="page-title">{isEdit ? 'Edit ticket' : 'Create ticket'}</h2>
       </div>
       <form className="panel grid gap-4" onSubmit={handleSubmit}>
+        {formError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
+            {formError}
+          </div>
+        )}
         <label className="field">
           <span>Title</span>
-          <input required value={values.title} onChange={(event) => updateValue('title', event.target.value)} />
+          <input
+            required
+            minLength="4"
+            value={values.title}
+            onChange={(event) => updateValue('title', event.target.value)}
+          />
         </label>
         <label className="field">
           <span>Description</span>
           <textarea
             required
+            minLength="10"
             rows="6"
             value={values.description}
             onChange={(event) => updateValue('description', event.target.value)}
