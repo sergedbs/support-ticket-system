@@ -17,8 +17,8 @@ export default function TicketDetailPage() {
   const canDelete = role === 'Admin' || (role === 'User' && ticket.ownerRole === 'User');
   const canEdit = role === 'Admin' || role === 'Agent' || (role === 'User' && ticket.ownerRole === 'User');
 
-  const handleDelete = () => {
-    deleteTicket(ticket.id);
+  const handleDelete = async () => {
+    await deleteTicket(ticket.id);
     navigate('/tickets');
   };
 

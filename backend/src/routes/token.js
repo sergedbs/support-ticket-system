@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { rolePermissions, roles } from '../utils/roles.js';
+import { rolePermissions } from '../utils/roles.js';
 
 const router = Router();
 const tokenRequestSchema = z.object({
-  role: z.enum(roles.filter((role) => role !== 'Visitor')),
+  role: z.enum(['User', 'Agent', 'Admin']),
 });
 
 router.post('/', (request, response) => {

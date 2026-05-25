@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { apiClient, attachToken } from '../api/client.js';
 import { readStorage, writeStorage } from '../utils/storage.js';
 
 const AuthContext = createContext(null);
@@ -22,8 +23,23 @@ function createDemoToken(role) {
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(() => readStorage('support-session', null));
 
-  const loginAs = (role) => {
-    const nextSession = createDemoToken(role);
+  useEffect(() => {
+    attachToken(session?.token);
+  }, [session]);
+
+  const loginAs = async (role) => {
+    let nextSession;
+    try {
+      const { data } = await apiClient.post('/token', { role });
+      nextSession = {
+        token: data.token,
+        role: data.role,
+        permissions: data.permissions,
+        expiresAt: Date.now() + 60 * 1000,
+      };
+    } catch {
+      nextSession = createDemoToken(role);
+    }
     setSession(nextSession);
     writeStorage('support-session', nextSession);
   };

@@ -39,13 +39,13 @@ export default function TicketFormPage() {
     setValues((current) => ({ ...current, [key]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (isEdit) {
-      updateTicket(id, values);
+      await updateTicket(id, values);
       navigate(`/tickets/${id}`);
     } else {
-      const ticket = createTicket(values);
+      const ticket = await createTicket(values);
       navigate(`/tickets/${ticket.id}`);
     }
   };

@@ -13,6 +13,7 @@ const initialFilters = {
 
 export default function TicketsPage() {
   const { visibleTickets } = useTickets();
+  const { apiStatus, error } = useTickets();
   const [filters, setFilters] = useState(() => readStorage('support-ticket-filters', initialFilters));
 
   const updateFilter = (key, value) => {
@@ -42,6 +43,8 @@ export default function TicketsPage() {
         <p className="eyebrow">Ticket queue</p>
         <h2 className="page-title">Tickets</h2>
         <p className="muted mt-2">Search and filter the currently visible tickets for your role.</p>
+        <p className="muted mt-2 text-sm">Data source: {apiStatus === 'api' ? 'Backend API' : 'Local demo state'}</p>
+        {error && <p className="mt-2 text-sm font-semibold text-warning">{error}</p>}
       </div>
       <div className="panel">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">

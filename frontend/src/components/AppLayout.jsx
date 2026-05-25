@@ -7,7 +7,7 @@ const links = [
   { to: '/', label: 'Home', public: true },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/tickets', label: 'Tickets' },
-  { to: '/tickets/new', label: 'New Ticket' },
+  { to: '/tickets/new', label: 'New Ticket', roles: ['User', 'Admin'] },
   { to: '/admin', label: 'Admin', roles: ['Admin'] },
 ];
 
