@@ -5,7 +5,7 @@ export const swaggerDocument = {
     version: '0.1.0',
     description: 'JWT-protected CRUD API for support tickets.',
   },
-  servers: [{ url: 'http://localhost:4000' }],
+  servers: [{ url: '/' }],
   components: {
     securitySchemes: {
       bearerAuth: {
