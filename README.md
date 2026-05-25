@@ -112,6 +112,8 @@ Backend: <https://support-ticket-system-w0ej.onrender.com>
 
 Swagger: <https://support-ticket-system-w0ej.onrender.com/docs>
 
+Uptime status: <https://stats.uptimerobot.com/38qPT0oHXk>
+
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
