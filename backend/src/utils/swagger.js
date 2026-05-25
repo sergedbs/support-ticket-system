@@ -48,6 +48,8 @@ export const swaggerDocument = {
           { name: 'status', in: 'query', schema: { type: 'string' } },
           { name: 'priority', in: 'query', schema: { type: 'string' } },
           { name: 'category', in: 'query', schema: { type: 'string' } },
+          { name: 'sort', in: 'query', schema: { type: 'string', enum: ['updatedAt', 'createdAt', 'priority', 'status', 'votes'] } },
+          { name: 'direction', in: 'query', schema: { type: 'string', enum: ['asc', 'desc'] } },
         ],
         responses: { 200: { description: 'Ticket list' }, 401: { description: 'Missing token' } },
       },
@@ -75,6 +77,14 @@ export const swaggerDocument = {
         summary: 'Delete ticket',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         responses: { 204: { description: 'Ticket deleted' }, 403: { description: 'Forbidden' } },
+      },
+    },
+    '/tickets/{id}/vote': {
+      post: {
+        security: [{ bearerAuth: [] }],
+        summary: 'Upvote ticket',
+        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+        responses: { 200: { description: 'Ticket upvoted' }, 403: { description: 'Forbidden' } },
       },
     },
   },

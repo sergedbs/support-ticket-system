@@ -13,6 +13,9 @@ router.get('/', async (request, response, next) => {
     const limit = Math.min(Math.max(Number(request.query.limit) || 10, 1), 50);
     const offset = Math.max(Number(request.query.offset) || 0, 0);
     const { search, status, priority, category } = request.query;
+    const allowedSorts = ['updatedAt', 'createdAt', 'priority', 'status', 'votes'];
+    const sort = allowedSorts.includes(request.query.sort) ? request.query.sort : 'updatedAt';
+    const direction = request.query.direction === 'asc' ? 'asc' : 'desc';
 
     const filters = {
       ...(request.user.role === 'User' ? { ownerRole: 'User' } : {}),
@@ -33,14 +36,14 @@ router.get('/', async (request, response, next) => {
     const [items, total] = await Promise.all([
       prisma.ticket.findMany({
         where: filters,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { [sort]: direction },
         take: limit,
         skip: offset,
       }),
       prisma.ticket.count({ where: filters }),
     ]);
 
-    return response.json({ items, total, limit, offset });
+    return response.json({ items, total, limit, offset, sort, direction });
   } catch (error) {
     return next(error);
   }
