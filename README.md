@@ -45,8 +45,6 @@ VITE_API_URL=http://127.0.0.1:4000
 
 ## Run Backend
 
-Use Node 20, 22, or 24 for best Prisma compatibility.
-
 ```sh
 cd backend
 npm install
