@@ -9,6 +9,9 @@ const initialFilters = {
   status: 'All',
   priority: 'All',
   category: 'All',
+  sort: 'updatedAt',
+  direction: 'desc',
+  pageSize: '5',
 };
 
 export default function TicketsPage() {
@@ -24,7 +27,9 @@ export default function TicketsPage() {
 
   const filteredTickets = useMemo(() => {
     const search = filters.search.trim().toLowerCase();
-    return visibleTickets.filter((ticket) => {
+    const priorityRank = { High: 3, Medium: 2, Low: 1 };
+    const statusRank = { Open: 4, 'In Progress': 3, Resolved: 2, Closed: 1 };
+    const result = visibleTickets.filter((ticket) => {
       const matchesSearch =
         !search ||
         ticket.title.toLowerCase().includes(search) ||
@@ -35,7 +40,26 @@ export default function TicketsPage() {
       const matchesCategory = filters.category === 'All' || ticket.category === filters.category;
       return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
     });
+
+    return result.sort((a, b) => {
+      const direction = filters.direction === 'asc' ? 1 : -1;
+      if (filters.sort === 'priority') return (priorityRank[a.priority] - priorityRank[b.priority]) * direction;
+      if (filters.sort === 'status') return (statusRank[a.status] - statusRank[b.status]) * direction;
+      if (filters.sort === 'votes') return (a.votes - b.votes) * direction;
+      return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * direction;
+    });
   }, [filters, visibleTickets]);
+
+  const [page, setPage] = useState(1);
+  const pageSize = Number(filters.pageSize);
+  const pageCount = Math.max(1, Math.ceil(filteredTickets.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageTickets = filteredTickets.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const updatePagedFilter = (key, value) => {
+    setPage(1);
+    updateFilter(key, value);
+  };
 
   return (
     <div className="space-y-6">
@@ -52,47 +76,101 @@ export default function TicketsPage() {
             <span>Search</span>
             <input
               value={filters.search}
-              onChange={(event) => updateFilter('search', event.target.value)}
+              onChange={(event) => updatePagedFilter('search', event.target.value)}
               placeholder="Title, description, or ID"
             />
           </label>
-          <FilterSelect label="Status" value={filters.status} options={ticketStatuses} onChange={(value) => updateFilter('status', value)} />
+          <FilterSelect label="Status" value={filters.status} options={ticketStatuses} onChange={(value) => updatePagedFilter('status', value)} />
           <FilterSelect
             label="Priority"
             value={filters.priority}
             options={ticketPriorities}
-            onChange={(value) => updateFilter('priority', value)}
+            onChange={(value) => updatePagedFilter('priority', value)}
           />
           <FilterSelect
             label="Category"
             value={filters.category}
             options={ticketCategories}
-            onChange={(value) => updateFilter('category', value)}
+            onChange={(value) => updatePagedFilter('category', value)}
+          />
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <FilterSelect
+            label="Sort by"
+            value={filters.sort}
+            options={[
+              ['updatedAt', 'Last updated'],
+              ['priority', 'Priority'],
+              ['status', 'Status'],
+              ['votes', 'Votes'],
+            ]}
+            includeAll={false}
+            onChange={(value) => updateFilter('sort', value)}
+          />
+          <FilterSelect
+            label="Direction"
+            value={filters.direction}
+            options={[
+              ['desc', 'Descending'],
+              ['asc', 'Ascending'],
+            ]}
+            includeAll={false}
+            onChange={(value) => updateFilter('direction', value)}
+          />
+          <FilterSelect
+            label="Page size"
+            value={filters.pageSize}
+            options={[
+              ['5', '5 tickets'],
+              ['10', '10 tickets'],
+              ['20', '20 tickets'],
+            ]}
+            includeAll={false}
+            onChange={(value) => updatePagedFilter('pageSize', value)}
           />
         </div>
       </div>
       <div className="flex items-center justify-between text-sm">
         <span className="muted">{filteredTickets.length} matching tickets</span>
-        <span className="muted">Showing first 10 results</span>
+        <span className="muted">
+          Page {currentPage} of {pageCount}
+        </span>
       </div>
       <div className="grid gap-4">
-        {filteredTickets.slice(0, 10).map((ticket) => (
+        {pageTickets.map((ticket) => (
           <TicketCard key={ticket.id} ticket={ticket} />
         ))}
         {filteredTickets.length === 0 && <div className="panel muted">No tickets match the current filters.</div>}
       </div>
+      {filteredTickets.length > pageSize && (
+        <div className="flex flex-wrap justify-end gap-2">
+          <button className="btn-secondary" type="button" disabled={currentPage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+            Previous
+          </button>
+          <button
+            className="btn-secondary"
+            type="button"
+            disabled={currentPage === pageCount}
+            onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-function FilterSelect({ label, value, options, onChange }) {
+function FilterSelect({ label, value, options, onChange, includeAll = true }) {
   return (
     <label className="field">
       <span>{label}</span>
       <select value={value} onChange={(event) => onChange(event.target.value)}>
-        <option>All</option>
+        {includeAll && <option>All</option>}
         {options.map((option) => (
-          <option key={option}>{option}</option>
+          <option key={Array.isArray(option) ? option[0] : option} value={Array.isArray(option) ? option[0] : option}>
+            {Array.isArray(option) ? option[1] : option}
+          </option>
         ))}
       </select>
     </label>
