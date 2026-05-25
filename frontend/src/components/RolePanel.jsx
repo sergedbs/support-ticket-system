@@ -1,9 +1,21 @@
 import { useAuth } from '../context/AuthContext.jsx';
+import { useToast } from '../context/ToastContext.jsx';
 
 const roles = ['User', 'Agent', 'Admin'];
 
 export default function RolePanel() {
   const { session, role, permissions, loginAs, logout } = useAuth();
+  const { showToast } = useToast();
+
+  const handleLogin = async (item) => {
+    await loginAs(item);
+    showToast(`${item} token is active.`, 'success');
+  };
+
+  const handleLogout = () => {
+    logout();
+    showToast('Demo token cleared.');
+  };
 
   return (
     <div className="panel sticky top-4">
@@ -18,13 +30,13 @@ export default function RolePanel() {
             key={item}
             className={item === role ? 'btn-primary' : 'btn-secondary'}
             type="button"
-            onClick={() => loginAs(item)}
+            onClick={() => handleLogin(item)}
           >
             Use {item}
           </button>
         ))}
         {session && (
-          <button className="btn-danger" type="button" onClick={logout}>
+          <button className="btn-danger" type="button" onClick={handleLogout}>
             Clear token
           </button>
         )}

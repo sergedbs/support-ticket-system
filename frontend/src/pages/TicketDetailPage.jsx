@@ -2,12 +2,15 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import TicketBadge from '../components/TicketBadge.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useTickets } from '../context/TicketContext.jsx';
+import { useToast } from '../context/ToastContext.jsx';
+import { getApiErrorMessage } from '../utils/errors.js';
 
 export default function TicketDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { role } = useAuth();
   const { deleteTicket, getTicket, voteTicket } = useTickets();
+  const { showToast } = useToast();
   const ticket = getTicket(id);
 
   if (!ticket) {
@@ -18,8 +21,22 @@ export default function TicketDetailPage() {
   const canEdit = role === 'Admin' || role === 'Agent' || (role === 'User' && ticket.ownerRole === 'User');
 
   const handleDelete = async () => {
-    await deleteTicket(ticket.id);
-    navigate('/tickets');
+    try {
+      await deleteTicket(ticket.id);
+      showToast('Ticket deleted.', 'success');
+      navigate('/tickets');
+    } catch (error) {
+      showToast(getApiErrorMessage(error), 'error');
+    }
+  };
+
+  const handleVote = async () => {
+    try {
+      await voteTicket(ticket.id);
+      showToast('Ticket upvoted.', 'success');
+    } catch (error) {
+      showToast(getApiErrorMessage(error), 'error');
+    }
   };
 
   return (
@@ -47,7 +64,7 @@ export default function TicketDetailPage() {
         </dl>
       </article>
       <div className="flex flex-wrap gap-3">
-        <button className="btn-secondary" type="button" onClick={() => voteTicket(ticket.id)}>
+        <button className="btn-secondary" type="button" onClick={handleVote}>
           Upvote
         </button>
         {canEdit && (

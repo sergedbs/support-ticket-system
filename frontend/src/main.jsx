@@ -5,17 +5,20 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { TicketProvider } from './context/TicketContext.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <AuthProvider>
-          <TicketProvider>
-            <App />
-          </TicketProvider>
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <TicketProvider>
+              <App />
+            </TicketProvider>
+          </AuthProvider>
+        </ToastProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,

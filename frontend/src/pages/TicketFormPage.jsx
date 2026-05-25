@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useTickets } from '../context/TicketContext.jsx';
+import { useToast } from '../context/ToastContext.jsx';
 import { ticketCategories, ticketPriorities, ticketStatuses } from '../data/seedTickets.js';
 import { getApiErrorMessage } from '../utils/errors.js';
 
@@ -10,6 +11,7 @@ export default function TicketFormPage() {
   const navigate = useNavigate();
   const { role } = useAuth();
   const { createTicket, getTicket, updateTicket } = useTickets();
+  const { showToast } = useToast();
   const existingTicket = id ? getTicket(id) : null;
   const isEdit = Boolean(id);
 
@@ -60,13 +62,17 @@ export default function TicketFormPage() {
     try {
       if (isEdit) {
         await updateTicket(id, values);
+        showToast('Ticket updated.', 'success');
         navigate(`/tickets/${id}`);
       } else {
         const ticket = await createTicket(values);
+        showToast('Ticket created.', 'success');
         navigate(`/tickets/${ticket.id}`);
       }
     } catch (error) {
-      setFormError(getApiErrorMessage(error));
+      const message = getApiErrorMessage(error);
+      setFormError(message);
+      showToast(message, 'error');
     }
   };
 
