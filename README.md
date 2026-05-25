@@ -104,7 +104,14 @@ node --check src/routes/tickets.js
 node --check src/routes/token.js
 ```
 
-## Deployment Placeholders
+## Live Demo
 
-- Frontend Vercel URL: add after deployment
-- Backend Render URL: add after deployment
+Frontend: <https://support-ticket-system-ashy-five.vercel.app>
+
+Backend: <https://support-ticket-system-w0ej.onrender.com>
+
+Swagger: <https://support-ticket-system-w0ej.onrender.com/docs>
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
