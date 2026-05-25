@@ -1,0 +1,58 @@
+export const seedTickets = [
+  {
+    id: 'TCK-1001',
+    title: 'Cannot access project dashboard',
+    description: 'The dashboard loads a blank page after signing in with the demo account.',
+    category: 'Access',
+    priority: 'High',
+    status: 'Open',
+    ownerRole: 'User',
+    ownerName: 'Demo User',
+    votes: 4,
+    createdAt: '2026-05-20T09:30:00.000Z',
+    updatedAt: '2026-05-22T12:10:00.000Z',
+  },
+  {
+    id: 'TCK-1002',
+    title: 'Billing receipt has wrong company name',
+    description: 'The receipt PDF shows an old company name and needs to be corrected.',
+    category: 'Billing',
+    priority: 'Medium',
+    status: 'In Progress',
+    ownerRole: 'User',
+    ownerName: 'Demo User',
+    votes: 2,
+    createdAt: '2026-05-21T14:15:00.000Z',
+    updatedAt: '2026-05-24T08:00:00.000Z',
+  },
+  {
+    id: 'TCK-1003',
+    title: 'Feature request for export filters',
+    description: 'Agents need to export filtered ticket lists for weekly status reviews.',
+    category: 'Feature',
+    priority: 'Low',
+    status: 'Resolved',
+    ownerRole: 'Agent',
+    ownerName: 'Support Agent',
+    votes: 7,
+    createdAt: '2026-05-18T11:45:00.000Z',
+    updatedAt: '2026-05-23T16:20:00.000Z',
+  },
+  {
+    id: 'TCK-1004',
+    title: 'Password reset email arrives late',
+    description: 'Users report that reset links arrive after the link has already expired.',
+    category: 'Account',
+    priority: 'High',
+    status: 'Open',
+    ownerRole: 'User',
+    ownerName: 'Demo User',
+    votes: 5,
+    createdAt: '2026-05-24T10:05:00.000Z',
+    updatedAt: '2026-05-24T10:05:00.000Z',
+  },
+];
+
+export const ticketStatuses = ['Open', 'In Progress', 'Resolved', 'Closed'];
+export const ticketPriorities = ['Low', 'Medium', 'High'];
+export const ticketCategories = ['Access', 'Account', 'Billing', 'Bug', 'Feature', 'General'];
