@@ -61,6 +61,12 @@ Backend URL:
 http://127.0.0.1:4000
 ```
 
+If you open the frontend at `http://127.0.0.1:5173`, keep that origin in `backend/.env`:
+
+```txt
+FRONTEND_URL="http://localhost:5173,http://127.0.0.1:5173"
+```
+
 Swagger UI:
 
 ```txt
