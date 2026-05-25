@@ -10,6 +10,16 @@ function createId() {
   return `TCK-${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
+function authConfig(session, extraConfig = {}) {
+  return {
+    ...extraConfig,
+    headers: {
+      ...(extraConfig.headers || {}),
+      Authorization: `Bearer ${session.token}`,
+    },
+  };
+}
+
 export function TicketProvider({ children }) {
   const { isAuthenticated, role, session } = useAuth();
   const [tickets, setTickets] = useState(() => readStorage('support-tickets', seedTickets));
@@ -29,12 +39,16 @@ export function TicketProvider({ children }) {
 
     try {
       setError('');
-      const { data } = await apiClient.get('/tickets', { params: { limit: 50, offset: 0 } });
+      const { data } = await apiClient.get('/tickets', authConfig(session, { params: { limit: 50, offset: 0 } }));
       setTickets(data.items);
       setApiStatus('api');
-    } catch {
+    } catch (requestError) {
       setApiStatus('local');
-      setError('Backend API is unavailable, using local demo tickets.');
+      setError(
+        requestError?.response?.status === 401
+          ? 'Token is missing or expired. Select a demo role again.'
+          : 'Backend API is unavailable, using local demo tickets.',
+      );
     }
   };
 
@@ -51,7 +65,7 @@ export function TicketProvider({ children }) {
 
   const createTicket = async (values) => {
     if (apiStatus === 'api') {
-      const { data } = await apiClient.post('/tickets', values);
+      const { data } = await apiClient.post('/tickets', values, authConfig(session));
       setTickets((current) => [data, ...current]);
       return data;
     }
@@ -73,7 +87,7 @@ export function TicketProvider({ children }) {
 
   const updateTicket = async (id, values) => {
     if (apiStatus === 'api') {
-      const { data } = await apiClient.patch(`/tickets/${id}`, values);
+      const { data } = await apiClient.patch(`/tickets/${id}`, values, authConfig(session));
       setTickets((current) => current.map((ticket) => (String(ticket.id) === String(id) ? data : ticket)));
       return data;
     }
@@ -86,7 +100,7 @@ export function TicketProvider({ children }) {
 
   const deleteTicket = async (id) => {
     if (apiStatus === 'api') {
-      await apiClient.delete(`/tickets/${id}`);
+      await apiClient.delete(`/tickets/${id}`, authConfig(session));
       setTickets((current) => current.filter((ticket) => String(ticket.id) !== String(id)));
       return;
     }
@@ -96,7 +110,7 @@ export function TicketProvider({ children }) {
 
   const voteTicket = async (id) => {
     if (apiStatus === 'api') {
-      const { data } = await apiClient.post(`/tickets/${id}/vote`);
+      const { data } = await apiClient.post(`/tickets/${id}/vote`, null, authConfig(session));
       setTickets((current) => current.map((ticket) => (String(ticket.id) === String(id) ? data : ticket)));
       return data;
     }
