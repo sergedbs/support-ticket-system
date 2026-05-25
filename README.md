@@ -1,0 +1,106 @@
+# Support Ticket System
+
+Lightweight full-stack MVP for managing support tickets with demo role-based access control.
+
+## Stack
+
+- Frontend: React, Vite, Tailwind CSS, React Router, Axios
+- Backend: Express.js, Prisma, SQLite, JWT, Swagger UI
+- Deployment targets: Vercel for frontend, Render for backend
+
+## Main Flows
+
+- Select a demo role and receive a short-lived token.
+- View protected dashboard and ticket pages.
+- Create, edit, delete, search, filter, and upvote tickets.
+- Agents can view and update all tickets.
+- Admins have full ticket access and an admin-only page.
+
+## Roles
+
+- Visitor: public page, theme switching, demo role selection
+- User: create and manage own tickets
+- Agent: view and update all tickets
+- Admin: full ticket access
+
+## Run Frontend
+
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend URL:
+
+```txt
+http://localhost:5173
+```
+
+Optional frontend environment variable:
+
+```txt
+VITE_API_URL=http://127.0.0.1:4000
+```
+
+## Run Backend
+
+Use Node 20, 22, or 24 for best Prisma compatibility.
+
+```sh
+cd backend
+npm install
+cp .env.example .env
+npm run prisma:generate
+npm run db:push
+npm run db:seed
+npm start
+```
+
+Backend URL:
+
+```txt
+http://127.0.0.1:4000
+```
+
+Swagger UI:
+
+```txt
+http://127.0.0.1:4000/docs
+```
+
+## API
+
+- `POST /token`
+- `GET /tickets`
+- `GET /tickets/:id`
+- `POST /tickets`
+- `PATCH /tickets/:id`
+- `DELETE /tickets/:id`
+- `POST /tickets/:id/vote`
+- `GET /docs`
+
+## Checks
+
+Frontend:
+
+```sh
+cd frontend
+npm run build
+```
+
+Backend:
+
+```sh
+cd backend
+npm run prisma:generate
+npx prisma validate
+node --check src/server.js
+node --check src/routes/tickets.js
+node --check src/routes/token.js
+```
+
+## Deployment Placeholders
+
+- Frontend Vercel URL: add after deployment
+- Backend Render URL: add after deployment

@@ -8,6 +8,7 @@ import ticketRouter from './routes/tickets.js';
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
+const host = process.env.HOST || '127.0.0.1';
 
 app.use(
   cors({
@@ -33,6 +34,6 @@ app.use((error, _request, response, _next) => {
   response.status(error.status || 500).json({ error: error.message || 'Internal server error' });
 });
 
-app.listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`);
+app.listen(port, host, () => {
+  console.log(`API listening on http://${host}:${port}`);
 });

@@ -3,6 +3,8 @@ node_modules
 dist
 build
 .DS_Store
+*.db
+*.db-journal
 
 *.md
 !README.md
